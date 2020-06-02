@@ -1,10 +1,8 @@
 package com.evgen.policyApp;
 
-import com.evgen.policyApp.domain.policy.Policy;
-import com.evgen.policyApp.domain.policy.PolicyObject;
-import com.evgen.policyApp.domain.policy.PolicyStatus;
-import com.evgen.policyApp.domain.policy.PolicySubObject;
-import com.evgen.policyApp.domain.policy.riskType.Risk;
+import com.evgen.policyApp.domain.policy.*;
+import com.evgen.policyApp.repository.RiskRepository;
+import com.evgen.policyApp.service.PremiumCalculator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,27 +10,26 @@ import java.util.List;
 
 public class AppTest {
     public static void main(String[] args) {
-        Risk fire = new Risk("FIRE", new BigDecimal("0.014"), new BigDecimal("0.024"), new BigDecimal("100"));
-        Risk theft = new Risk("THEFT", new BigDecimal("0.11"), new BigDecimal("0.05"), new BigDecimal("15"));
+        Risk fire = new Risk("FIRE", "fire");
+        Risk theft = new Risk("THEFT", "theft");
 
         PolicySubObject tv = new PolicySubObject();
         tv.setName("TV");
-        tv.setSumInsured(new BigDecimal("600.0"));
+        tv.setCostOfTheItem(new BigDecimal("500.0"));
 
         List<Risk> riskTypeTV = new ArrayList<>();
         riskTypeTV.add(fire);
-        riskTypeTV.add(theft);
 
         tv.setRiskType(riskTypeTV);
 
         PolicySubObject microwave = new PolicySubObject();
         microwave.setName("Microwave");
-        microwave.setSumInsured(new BigDecimal("50.0"));
+        microwave.setCostOfTheItem(new BigDecimal("102.51"));
 
         List<Risk> riskTypeMicrowave = new ArrayList<>();
         riskTypeMicrowave.add(theft);
 
-        microwave.setRiskType(riskTypeTV);
+        microwave.setRiskType(riskTypeMicrowave);
 
         PolicyObject house = new PolicyObject();
         house.setName("House");
@@ -52,6 +49,11 @@ public class AppTest {
 
         policyOne.setObjects(objects);
 
-        System.out.println(policyOne);
+        RiskRepository repository = new RiskRepository();
+        PremiumCalculator premiumService = new PremiumCalculator(repository);
+        premiumService.addRisks(fire);
+        premiumService.addRisks(theft);
+
+        System.out.println(premiumService.calculate(policyOne));
     }
 }
