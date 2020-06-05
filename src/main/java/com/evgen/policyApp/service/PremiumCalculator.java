@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,6 +35,8 @@ public class PremiumCalculator {
                 for (Risk risk : item.getRiskType()) {
                     amountByRisk.computeIfPresent(risk, (key, val) -> val.add(item.getCostOfTheItem()));
                     amountByRisk.putIfAbsent(risk, item.getCostOfTheItem());
+
+                    System.out.println("AmountByRisk: " + amountByRisk);
                 }
             }
         }
@@ -44,14 +44,20 @@ public class PremiumCalculator {
         Map<String, BigDecimal> premiumByRisk = new HashMap<>();
 
         for (Map.Entry<Risk, BigDecimal> entry : amountByRisk.entrySet()) {
+            System.out.println("Sum: " + entry.getValue());
+            System.out.println("RiskType: " + entry.getKey().getRiskType());
             premiumByRisk.put(entry.getKey().getRiskType(), entry.getValue().multiply(entry.getKey()
                     .getCurrentCoefficient(entry.getValue())).setScale(2, RoundingMode.HALF_EVEN));
+
+            System.out.println("PremiumByRisk: " + premiumByRisk);
         }
 
         BigDecimal premium = new BigDecimal("0.00");
 
         for (BigDecimal value : premiumByRisk.values()) {
             premium = premium.add(value);
+            System.out.println("premium by risk: " + value);
+            System.out.println("premium: " + premium);
         }
 
         response.setNumber(policy.getNumber());

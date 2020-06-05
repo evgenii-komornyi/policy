@@ -1,26 +1,24 @@
 package com.evgen.policyApp.controller;
 
-import com.evgen.policyApp.domain.policy.Policy;
-import com.evgen.policyApp.domain.policy.PolicyObject;
-import com.evgen.policyApp.domain.policy.PolicySubObject;
-import com.evgen.policyApp.domain.policy.Risk;
+import com.evgen.policyApp.domain.policy.*;
 import com.evgen.policyApp.domain.policy.request.ObjectRequest;
 import com.evgen.policyApp.domain.policy.request.PolicyRequest;
 import com.evgen.policyApp.domain.policy.request.SubObjectRequest;
 import com.evgen.policyApp.domain.policy.response.CalculateResponse;
+import com.evgen.policyApp.dto.ErrorsDTO;
 import com.evgen.policyApp.dto.PolicyDTO;
+import com.evgen.policyApp.dto.ResponseDTO;
 import com.evgen.policyApp.repository.RiskRepository;
 import com.evgen.policyApp.service.PremiumCalculator;
+import com.evgen.policyApp.service.validation.RequestValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @EnableWebMvc
@@ -37,21 +35,37 @@ public class PolicyController {
     }
 
     @PostMapping(value = "/create")
-    public ResponseEntity<PolicyDTO> createPolicy(@RequestBody PolicyRequest request) throws IOException {
-        List<String> errorsList = validate(request);
+    public ResponseEntity<ResponseDTO> createPolicy(@RequestBody PolicyRequest request) throws IOException {
+        RequestValidation validation = new RequestValidation();
 
-        PolicyDTO responseJson = convertToDTO(service.calculate(convertToObject(request)), errorsList);
+        HashSet<String> errorsList = validation.validateRequest(request);
+        ResponseDTO response = new ResponseDTO();
+        try {
+            response.setPolicy(convertToDTO(service.calculate(convertToObject(request))));
+        } catch (NullPointerException e) {
+            e.getStackTrace();
+            if (!errorsList.isEmpty()) {
+                response.setErrors(convertErrorsToDTO(errorsList));
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(responseJson, HttpStatus.OK);
+    private ErrorsDTO convertErrorsToDTO(HashSet<String> errors) {
+        ErrorsDTO errorsDTO = new  ErrorsDTO();
+        errorsDTO.setErrors(errors);
+
+        return errorsDTO;
     }
 
     private Policy convertToObject(PolicyRequest request) {
         Policy policy = new Policy();
-        PolicyObject object = new PolicyObject();
 
         List<PolicyObject> objects = new ArrayList<>();
 
         for (ObjectRequest requestObject : request.getObjects()) {
+            PolicyObject object = new PolicyObject();
+
             object.setObjectName(requestObject.getName());
             List<PolicySubObject> items = new ArrayList<>();
 
@@ -81,33 +95,17 @@ public class PolicyController {
         }
 
         policy.setObjects(objects);
-        policy.setStatus(request.getStatus());
+        policy.setStatus(request.getStatus().toUpperCase());
         policy.setNumber(request.getNumber());
 
         return policy;
     }
 
-    private List<String> validate(PolicyRequest request) {
-        List<String> errors = new ArrayList<>();
-        for (ObjectRequest object : request.getObjects()) {
-            for (SubObjectRequest item : object.getItems()) {
-                if (item.getRisks().isEmpty()) {
-                    if (!errors.contains("Risk is empty")) {
-                        errors.add("Risk is empty");
-                    }
-                }
-            }
-        }
-
-        return errors;
-    }
-
-    private PolicyDTO convertToDTO(CalculateResponse policy, List<String> errors) {
+    private PolicyDTO convertToDTO(CalculateResponse policy) {
         PolicyDTO dto = new PolicyDTO();
         dto.setNumber(policy.getNumber());
         dto.setStatus(policy.getStatus());
         dto.setPremium(policy.getPremium());
-        dto.setErrors(errors);
 
         return dto;
     }

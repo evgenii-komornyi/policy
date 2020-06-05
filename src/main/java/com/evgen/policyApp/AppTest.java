@@ -1,16 +1,9 @@
 package com.evgen.policyApp;
 
-import com.evgen.policyApp.domain.policy.*;
-import com.evgen.policyApp.repository.RiskRepository;
-import com.evgen.policyApp.service.PremiumCalculator;
-
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AppTest {
-    public static void main(String[] args) throws IOException {
+    public static void main(java.lang.String[] args) throws IOException {
 //        Risk fire = new Risk("FIRE", "fire.groovy");
 //        Risk theft = new Risk("THEFT", "theft.groovy");
 //
@@ -43,7 +36,7 @@ public class AppTest {
 //
 //        Policy policyOne = new Policy();
 //        policyOne.setNumber("LV-0206-2569800");
-//        policyOne.setStatus(PolicyStatus.REGISTERED);
+//        policyOne.setStatus(String.REGISTERED);
 //
 //        List<PolicyObject> objects = new ArrayList<>();
 //        objects.add(house);

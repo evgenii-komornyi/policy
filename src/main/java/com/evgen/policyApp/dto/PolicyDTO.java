@@ -1,16 +1,13 @@
 package com.evgen.policyApp.dto;
 
-import com.evgen.policyApp.domain.policy.PolicyStatus;
-
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class PolicyDTO {
     private String number;
-    private PolicyStatus status;
+    private String status;
     private BigDecimal premium;
-    private List<String> errors;
 
     @Override
     public String toString() {
@@ -18,7 +15,6 @@ public class PolicyDTO {
                 "number='" + number + '\'' +
                 ", status=" + status +
                 ", premium=" + premium +
-                ", errors=" + errors +
                 '}';
     }
 
@@ -29,21 +25,12 @@ public class PolicyDTO {
         PolicyDTO policyDTO = (PolicyDTO) o;
         return Objects.equals(number, policyDTO.number) &&
                 status == policyDTO.status &&
-                Objects.equals(premium, policyDTO.premium) &&
-                Objects.equals(errors, policyDTO.errors);
+                Objects.equals(premium, policyDTO.premium);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(number, status, premium, errors);
-    }
-
-    public List<String> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<String> errors) {
-        this.errors = errors;
+        return Objects.hash(number, status, premium);
     }
 
     public String getNumber() {
@@ -54,11 +41,11 @@ public class PolicyDTO {
         this.number = number;
     }
 
-    public PolicyStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(PolicyStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
