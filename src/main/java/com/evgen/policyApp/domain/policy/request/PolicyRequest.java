@@ -1,19 +1,17 @@
 package com.evgen.policyApp.domain.policy.request;
 
-import com.evgen.policyApp.domain.policy.PolicyStatus;
-
 import java.util.List;
 import java.util.Objects;
 
 public class PolicyRequest {
     private String number;
-    private PolicyStatus status;
+    private String status;
     private List<ObjectRequest> objects;
 
     @Override
-    public String toString() {
+    public java.lang.String toString() {
         return "PolicyRequest{" +
-                "number='" + number + '\'' +
+                "number=" + number +
                 ", status=" + status +
                 ", objects=" + objects +
                 '}';
@@ -42,11 +40,11 @@ public class PolicyRequest {
         this.number = number;
     }
 
-    public PolicyStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(PolicyStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
