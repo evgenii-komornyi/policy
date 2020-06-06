@@ -43,7 +43,7 @@ public class PolicyController {
         try {
             response.setPolicy(convertToDTO(service.calculate(convertToObject(request))));
         } catch (NullPointerException e) {
-            e.getStackTrace();
+            System.out.println(e.getMessage());
             if (!errorsList.isEmpty()) {
                 response.setErrors(convertErrorsToDTO(errorsList));
             }
@@ -74,19 +74,18 @@ public class PolicyController {
                 List<Risk> riskList = new ArrayList<>();
                 List<String> riskWithoutDuplicate = removeDuplicate(requestItem.getRisks());
 
-                for (String risk : riskWithoutDuplicate) {
-                    item.setSubObjectName(requestItem.getName());
-                    item.setCostOfTheItem(requestItem.getCost());
+                item.setSubObjectName(requestItem.getName());
+                item.setCostOfTheItem(requestItem.getCost());
 
+                for (String risk : riskWithoutDuplicate) {
                     for (Map.Entry<String, Risk> s : riskRepository.getAllRisks().entrySet()) {
                         if (risk.contains(s.getKey())) {
                             riskList.add(s.getValue());
                             item.setRiskType(riskList);
                         }
                     }
-
-                    items.add(item);
                 }
+                items.add(item);
 
                 object.setSubObjects(items);
             }
@@ -106,6 +105,7 @@ public class PolicyController {
         dto.setNumber(policy.getNumber());
         dto.setStatus(policy.getStatus());
         dto.setPremium(policy.getPremium());
+        dto.setSumInsured(policy.getAmountByRisk());
 
         return dto;
     }

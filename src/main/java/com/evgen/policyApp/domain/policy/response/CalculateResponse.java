@@ -1,20 +1,22 @@
 package com.evgen.policyApp.domain.policy.response;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 
 public class CalculateResponse {
-    private java.lang.String number;
+    private String number;
     private String status;
-
     private BigDecimal premium;
+    private Map<String, BigDecimal> amountByRisk;
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "CalculateResponse{" +
                 "number='" + number + '\'' +
-                ", status=" + status +
+                ", status='" + status + '\'' +
                 ", premium=" + premium +
+                ", amountByRisk=" + amountByRisk +
                 '}';
     }
 
@@ -22,23 +24,23 @@ public class CalculateResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         CalculateResponse that = (CalculateResponse) o;
         return Objects.equals(number, that.number) &&
-                status == that.status &&
-                Objects.equals(premium, that.premium);
+                Objects.equals(status, that.status) &&
+                Objects.equals(premium, that.premium) &&
+                Objects.equals(amountByRisk, that.amountByRisk);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), number, status, premium);
+        return Objects.hash(number, status, premium, amountByRisk);
     }
 
-    public java.lang.String getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(java.lang.String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -56,5 +58,13 @@ public class CalculateResponse {
 
     public void setPremium(BigDecimal premium) {
         this.premium = premium;
+    }
+
+    public Map<String, BigDecimal> getAmountByRisk() {
+        return amountByRisk;
+    }
+
+    public void setAmountByRisk(Map<String, BigDecimal> amountByRisk) {
+        this.amountByRisk = amountByRisk;
     }
 }
