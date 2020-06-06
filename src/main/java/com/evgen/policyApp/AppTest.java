@@ -44,7 +44,7 @@ public class AppTest {
 //        policyOne.setObjects(objects);
 //
 //        RiskRepository repository = new RiskRepository();
-//        PremiumCalculator premiumService = new PremiumCalculator(repository);
+//        PremiumCalculatorService premiumService = new PremiumCalculatorService(repository);
 //        premiumService.addRisks(fire);
 //        premiumService.addRisks(theft);
 //
