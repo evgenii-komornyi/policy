@@ -1,10 +1,9 @@
 package com.evgen.policyApp.controller;
 
-import com.evgen.policyApp.domain.policy.*;
-import com.evgen.policyApp.domain.policy.request.ObjectRequest;
+import com.evgen.policyApp.domain.policy.Policy;
 import com.evgen.policyApp.domain.policy.request.PolicyRequest;
-import com.evgen.policyApp.domain.policy.request.SubObjectRequest;
 import com.evgen.policyApp.domain.policy.response.CalculateResponse;
+import com.evgen.policyApp.domain.policy.response.ValidateAndCalculateResponse;
 import com.evgen.policyApp.dto.ErrorsDTO;
 import com.evgen.policyApp.dto.PolicyDTO;
 import com.evgen.policyApp.dto.ResponseDTO;
@@ -28,97 +27,43 @@ public class PolicyController {
     private final PremiumCalculator service;
     @Autowired
     private final RiskRepository riskRepository;
+    @Autowired
+    private final RequestValidation validation;
 
-    public PolicyController(PremiumCalculator service, RiskRepository riskRepository) {
+    public PolicyController(PremiumCalculator service, RiskRepository riskRepository, RequestValidation validation) {
         this.service = service;
         this.riskRepository = riskRepository;
+        this.validation = validation;
     }
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<ResponseDTO> createPolicy(@RequestBody PolicyRequest request) throws IOException {
-        RequestValidation validation = new RequestValidation();
-
-        HashSet<String> errorsList = validation.validateRequest(request);
+    @PostMapping(value = "/calculate")
+    public ResponseEntity<ResponseDTO> createPolicy(@RequestBody PolicyRequest request) {
         ResponseDTO response = new ResponseDTO();
+
         try {
-            response.setPolicy(convertToDTO(service.calculate(convertToObject(request))));
+            response.setPolicy(convertToDTO(service.validateAndCalculate(request)));
         } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
-            if (!errorsList.isEmpty()) {
-                response.setErrors(convertErrorsToDTO(errorsList));
-            }
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private ErrorsDTO convertErrorsToDTO(HashSet<String> errors) {
-        ErrorsDTO errorsDTO = new  ErrorsDTO();
-        errorsDTO.setErrors(errors);
-
-        return errorsDTO;
-    }
-
-    private Policy convertToObject(PolicyRequest request) {
-        Policy policy = new Policy();
-
-        List<PolicyObject> objects = new ArrayList<>();
-
-        for (ObjectRequest requestObject : request.getObjects()) {
-            PolicyObject object = new PolicyObject();
-
-            object.setObjectName(requestObject.getName());
-            List<PolicySubObject> items = new ArrayList<>();
-
-            for (SubObjectRequest requestItem : requestObject.getItems()) {
-                PolicySubObject item = new PolicySubObject();
-                List<Risk> riskList = new ArrayList<>();
-                List<String> riskWithoutDuplicate = removeDuplicate(requestItem.getRisks());
-
-                item.setSubObjectName(requestItem.getName());
-                item.setCostOfTheItem(requestItem.getCost());
-
-                for (String risk : riskWithoutDuplicate) {
-                    for (Map.Entry<String, Risk> s : riskRepository.getAllRisks().entrySet()) {
-                        if (risk.contains(s.getKey())) {
-                            riskList.add(s.getValue());
-                            item.setRiskType(riskList);
-                        }
-                    }
-                }
-                items.add(item);
-
-                object.setSubObjects(items);
-            }
-
-            objects.add(object);
+    private PolicyDTO convertToDTO(ValidateAndCalculateResponse response) {
+        PolicyDTO dto = new PolicyDTO();
+        dto.setNumber(response.getNumber());
+        dto.setStatus(response.getStatus());
+        if (response.getCalculateResponse() != null) {
+            dto.setPremium(response.getCalculateResponse().getPremium());
+            dto.setSumInsured(response.getCalculateResponse().getAmountByRisk());
         }
 
-        policy.setObjects(objects);
-        policy.setStatus(request.getStatus().toUpperCase());
-        policy.setNumber(request.getNumber());
-
-        return policy;
-    }
-
-    private PolicyDTO convertToDTO(CalculateResponse policy) {
-        PolicyDTO dto = new PolicyDTO();
-        dto.setNumber(policy.getNumber());
-        dto.setStatus(policy.getStatus());
-        dto.setPremium(policy.getPremium());
-        dto.setSumInsured(policy.getAmountByRisk());
+        if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+            dto.setErrors(response.getErrors());
+        }
 
         return dto;
     }
-
-    private List<String> removeDuplicate(List<String> riskList) {
-        List<String> risksWithoutDuplicate = new ArrayList<>();
-
-        for (String risk : riskList) {
-            if (!risksWithoutDuplicate.contains(risk.toUpperCase())) {
-                risksWithoutDuplicate.add(risk.toUpperCase());
-            }
-        }
-        return risksWithoutDuplicate;
-    }
-
 }
