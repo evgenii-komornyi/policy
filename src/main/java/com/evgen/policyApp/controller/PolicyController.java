@@ -1,14 +1,11 @@
 package com.evgen.policyApp.controller;
 
-import com.evgen.policyApp.domain.policy.Policy;
 import com.evgen.policyApp.domain.policy.request.PolicyRequest;
-import com.evgen.policyApp.domain.policy.response.CalculateResponse;
 import com.evgen.policyApp.domain.policy.response.ValidateAndCalculateResponse;
-import com.evgen.policyApp.dto.ErrorsDTO;
 import com.evgen.policyApp.dto.PolicyDTO;
 import com.evgen.policyApp.dto.ResponseDTO;
 import com.evgen.policyApp.repository.RiskRepository;
-import com.evgen.policyApp.service.PremiumCalculator;
+import com.evgen.policyApp.service.PremiumCalculatorService;
 import com.evgen.policyApp.service.validation.RequestValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,20 +14,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.IOException;
-import java.util.*;
 
 @RestController
 @EnableWebMvc
 @CrossOrigin
 public class PolicyController {
     @Autowired
-    private final PremiumCalculator service;
+    private final PremiumCalculatorService service;
     @Autowired
     private final RiskRepository riskRepository;
     @Autowired
     private final RequestValidation validation;
 
-    public PolicyController(PremiumCalculator service, RiskRepository riskRepository, RequestValidation validation) {
+    public PolicyController(PremiumCalculatorService service, RiskRepository riskRepository, RequestValidation validation) {
         this.service = service;
         this.riskRepository = riskRepository;
         this.validation = validation;

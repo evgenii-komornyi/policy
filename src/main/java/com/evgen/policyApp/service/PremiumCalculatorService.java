@@ -20,12 +20,12 @@ import java.math.RoundingMode;
 import java.util.*;
 
 @Service
-public class PremiumCalculator {
+public class PremiumCalculatorService {
     private final RiskRepository repository;
     private final RequestValidation validation;
 
     @Autowired
-    public PremiumCalculator(RiskRepository repository, RequestValidation validation) {
+    public PremiumCalculatorService(RiskRepository repository, RequestValidation validation) {
         this.repository = repository;
         this.validation = validation;
     }
@@ -36,7 +36,7 @@ public class PremiumCalculator {
 
         if (errors.isEmpty()) {
             response.setNumber(request.getNumber());
-            response.setStatus(request.getStatus());
+            response.setStatus(request.getStatus().toUpperCase());
             Policy policy = convertToObject(request);
             response.setCalculateResponse(calculate(policy));
         } else {

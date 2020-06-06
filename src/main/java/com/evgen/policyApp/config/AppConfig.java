@@ -1,7 +1,5 @@
 package com.evgen.policyApp.config;
 
-import com.evgen.policyApp.repository.RiskRepository;
-import com.evgen.policyApp.service.PremiumCalculator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
