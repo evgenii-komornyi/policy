@@ -25,45 +25,40 @@ public class PremiumCalculator {
     }
 
     public CalculateResponse calculate(Policy policy) throws IOException {
-        CalculateResponse response = new CalculateResponse();
-
         Map<Risk, BigDecimal> amountByRisk = new HashMap<>();
 
         for (PolicyObject object : policy.getObjects()) {
             for (PolicySubObject item : object.getSubObjects()) {
-
                 for (Risk risk : item.getRiskType()) {
                     amountByRisk.computeIfPresent(risk, (key, val) -> val.add(item.getCostOfTheItem()));
                     amountByRisk.putIfAbsent(risk, item.getCostOfTheItem());
-
-                    System.out.println("AmountByRisk: " + amountByRisk);
                 }
             }
+        }
+        Map<String, BigDecimal> forResponse = new HashMap<>();
+
+        for (Map.Entry<Risk, BigDecimal> entry : amountByRisk.entrySet()) {
+            forResponse.put(entry.getKey().getRiskType(), entry.getValue());
         }
 
         Map<String, BigDecimal> premiumByRisk = new HashMap<>();
 
         for (Map.Entry<Risk, BigDecimal> entry : amountByRisk.entrySet()) {
-            System.out.println("Sum: " + entry.getValue());
-            System.out.println("RiskType: " + entry.getKey().getRiskType());
             premiumByRisk.put(entry.getKey().getRiskType(), entry.getValue().multiply(entry.getKey()
                     .getCurrentCoefficient(entry.getValue())).setScale(2, RoundingMode.HALF_EVEN));
-
-            System.out.println("PremiumByRisk: " + premiumByRisk);
         }
 
         BigDecimal premium = new BigDecimal("0.00");
 
         for (BigDecimal value : premiumByRisk.values()) {
             premium = premium.add(value);
-            System.out.println("premium by risk: " + value);
-            System.out.println("premium: " + premium);
         }
 
+        CalculateResponse response = new CalculateResponse();
         response.setNumber(policy.getNumber());
         response.setStatus(policy.getStatus());
         response.setPremium(premium);
-
+        response.setAmountByRisk(forResponse);
         return response;
     }
 }
