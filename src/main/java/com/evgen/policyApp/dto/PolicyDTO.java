@@ -1,6 +1,7 @@
 package com.evgen.policyApp.dto;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,6 +10,7 @@ public class PolicyDTO {
     private String status;
     private BigDecimal premium;
     private Map<String, BigDecimal> sumInsured;
+    private HashSet<String> errors;
 
     @Override
     public String toString() {
@@ -17,6 +19,7 @@ public class PolicyDTO {
                 ", status='" + status + '\'' +
                 ", premium=" + premium +
                 ", sumInsured=" + sumInsured +
+                ", errors=" + errors +
                 '}';
     }
 
@@ -28,12 +31,13 @@ public class PolicyDTO {
         return Objects.equals(number, policyDTO.number) &&
                 Objects.equals(status, policyDTO.status) &&
                 Objects.equals(premium, policyDTO.premium) &&
-                Objects.equals(sumInsured, policyDTO.sumInsured);
+                Objects.equals(sumInsured, policyDTO.sumInsured) &&
+                Objects.equals(errors, policyDTO.errors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(number, status, premium, sumInsured);
+        return Objects.hash(number, status, premium, sumInsured, errors);
     }
 
     public String getNumber() {
@@ -66,5 +70,13 @@ public class PolicyDTO {
 
     public void setSumInsured(Map<String, BigDecimal> sumInsured) {
         this.sumInsured = sumInsured;
+    }
+
+    public HashSet<String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(HashSet<String> errors) {
+        this.errors = errors;
     }
 }

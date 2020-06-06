@@ -4,13 +4,11 @@ import java.util.Objects;
 
 public class ResponseDTO {
     private PolicyDTO policy;
-    private ErrorsDTO errors;
 
     @Override
     public String toString() {
         return "ResponseDTO{" +
                 "policy=" + policy +
-                ", errors=" + errors +
                 '}';
     }
 
@@ -19,13 +17,12 @@ public class ResponseDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResponseDTO that = (ResponseDTO) o;
-        return Objects.equals(policy, that.policy) &&
-                Objects.equals(errors, that.errors);
+        return Objects.equals(policy, that.policy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(policy, errors);
+        return Objects.hash(policy);
     }
 
     public PolicyDTO getPolicy() {
@@ -34,13 +31,5 @@ public class ResponseDTO {
 
     public void setPolicy(PolicyDTO policy) {
         this.policy = policy;
-    }
-
-    public ErrorsDTO getErrors() {
-        return errors;
-    }
-
-    public void setErrors(ErrorsDTO errors) {
-        this.errors = errors;
     }
 }
