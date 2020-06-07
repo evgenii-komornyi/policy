@@ -42,7 +42,6 @@ public class PremiumCalculatorService {
         } else {
             response.setErrors(errors);
         }
-
         return response;
     }
 
@@ -133,6 +132,7 @@ public class PremiumCalculatorService {
         CalculateResponse response = new CalculateResponse();
         response.setPremium(premium);
         response.setAmountByRisk(sumInsured);
+
         return response;
     }
 }
