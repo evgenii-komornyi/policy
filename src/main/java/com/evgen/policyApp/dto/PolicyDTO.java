@@ -2,14 +2,14 @@ package com.evgen.policyApp.dto;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class PolicyDTO {
     private String number;
     private String status;
     private BigDecimal premium;
-    private Map<String, BigDecimal> sumInsured;
+    private List<SumInsuredByRiskTypeDTO> sumInsured;
     private HashSet<String> errors;
 
     @Override
@@ -64,11 +64,11 @@ public class PolicyDTO {
         this.premium = premium;
     }
 
-    public Map<String, BigDecimal> getSumInsured() {
+    public List<SumInsuredByRiskTypeDTO> getSumInsured() {
         return sumInsured;
     }
 
-    public void setSumInsured(Map<String, BigDecimal> sumInsured) {
+    public void setSumInsured(List<SumInsuredByRiskTypeDTO> sumInsured) {
         this.sumInsured = sumInsured;
     }
 
